@@ -1,10 +1,10 @@
-!/bin/bash
+#!/bin/bash
 
 # Update and upgrade system
 sudo apt update && sudo apt upgrade -y
 
 # Install Brave Browser
-sudo apt install -y apt-transport-https curl
+sudo apt install -y apt-transport-https curl gnupg
 sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
 echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
 sudo apt update
@@ -35,8 +35,10 @@ sudo apt update
 sudo apt install -y code
 
 # Install MongoDB
-wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+curl -fsSL https://pgp.mongodb.com/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
+
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+
 sudo apt update
 sudo apt install -y mongodb-org
 
@@ -47,11 +49,17 @@ sudo systemctl enable mongod
 # Install PostgreSQL
 sudo apt install -y postgresql postgresql-contrib
 sudo apt-get install xclip -yer and database
-sudo -u postgres psql -c "CREATE USER devuser WITH PASSWORD 'password';"
-sudo -u postgres psql -c "CREATE DATABASE devdb OWNER devuser;"
+sudo -u postgres psql -c "CREATE USER root WITH PASSWORD 'root';"
+sudo -u postgres psql -c "CREATE DATABASE devdb OWNER root;"
 
 # Install Redis
 sudo apt install -y redis-server
+curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+
+sudo apt-get update
+sudo apt-get install redis
 
 # Start Redis
 sudo systemctl enable redis-server.service
@@ -63,9 +71,9 @@ sudo systemctl start mysql
 sudo systemctl enable mysql
 
 # Setup MySQL user and database
-sudo mysql -e "CREATE USER 'devuser'@'localhost' IDENTIFIED BY 'password';"
+sudo mysql -e "CREATE USER 'root'@'localhost' IDENTIFIED BY 'root';"
 sudo mysql -e "CREATE DATABASE devdb;"
-sudo mysql -e "GRANT ALL PRIVILEGES ON devdb.* TO 'devuser'@'localhost';"
+sudo mysql -e "GRANT ALL PRIVILEGES ON devdb.* TO 'root'@'localhost';"
 sudo mysql -e "FLUSH PRIVILEGES;"
 
 # Install Zsh and Oh My Zsh
@@ -101,18 +109,6 @@ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubun
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
 
-# Fetch the latest version of Docker Desktop
-latest_docker_desktop_version=$(curl -s https://api.github.com/repos/docker/desktop/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
-
-# Download the latest Docker Desktop .deb package
-curl -LO https://desktop.docker.com/linux/main/amd64/docker-desktop-$latest_docker_desktop_version-amd64.deb
-
-# Install Docker Desktop .deb package
-sudo apt-get install -y ./docker-desktop-$latest_docker_desktop_version-amd64.deb
-
-# Start Docker Desktop
-systemctl --user start docker-desktop
-systemctl --user enable docker-desktop
 # Install Python
 sudo apt install -y python3 python3-pip
 
@@ -122,14 +118,23 @@ sudo apt install -y ruby-full
 # Install PHP
 sudo apt install -y php libapache2-mod-php php-cli php-cgi php-mysql php-pgsql
 
-# Install Go
+# Remove any existing Go installation
 sudo rm -rf /usr/local/go
-latest_go_version=$(curl -s https://go.dev/VERSION?m=text)
+
+# Get the latest Go version (extracting only the version part)
+latest_go_version=$(curl -s https://go.dev/VERSION?m=text | head -n 1)
+
+# Download the latest Go version
 wget "https://go.dev/dl/${latest_go_version}.linux-amd64.tar.gz"
-sudo rm -rf /usr/local/go
+
+# Extract the downloaded tarball
 sudo tar -C /usr/local -xzf "${latest_go_version}.linux-amd64.tar.gz"
+
+# Add Go to the PATH
 echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.zshrc
-source ~/.zshrc
+
+# Verify the Go installation
+/usr/local/go/bin/go version
 
 # Clean up
 sudo apt autoremove -y
