@@ -51,8 +51,7 @@ brew install nvm
 mkdir ~/.nvm
 echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
 echo '[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"' >> ~/.zshrc
-source ~/.zshrc
-
+eval "$(rbenv init - --)"
 # Install latest version of Node.js
 nvm install node
 
@@ -140,7 +139,13 @@ brew install awscli
 
 # dbeaver
 brew install --cask dbeaver-community
-/Applications/DBeaver.app/Contents/MacOS/dbeaver
+
+# Check if DBeaver is in the Applications folder
+if [ ! -d "/Applications/DBeaver.app" ]; then
+    mv /Applications/DBeaver.app /Applications
+else
+    echo "DBeaver is already in the Applications folder."
+fi
 
 # Bitwarden
 brew install --cask bitwarden
