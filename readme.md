@@ -38,7 +38,9 @@ The script installs essential development tools and applications, ensuring you h
 - **kubectl**: Kubernetes CLI
 - **awscli**: AWS CLI
 - **dbeaver-community**: DB GUI
-- **bitwarden**: Password manager
+- **1password**: Password manager
+- **rectangle**: Move and resize windows using keyboard shortcuts or snap areas
+
 
 ### Ubuntu (Linux)  
 

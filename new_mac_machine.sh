@@ -147,9 +147,15 @@ else
     echo "DBeaver is already in the Applications folder."
 fi
 
-# Bitwarden
-brew install --cask bitwarden
+# 1password
+brew install --cask 1password
+
+# Rectangle
+brew install --cask rectangle
 # Clean up
 brew cleanup
+
+# Make ~/Projects directory
+cd ~ && mkdir Projects && cd Projects
 
 echo "Setup complete! Please restart your terminal or log out and log back in to apply changes."
