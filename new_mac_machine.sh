@@ -152,6 +152,9 @@ brew install --cask 1password
 
 # Rectangle
 brew install --cask rectangle
+
+# Notion
+brew install --cask notion
 # Clean up
 brew cleanup
 

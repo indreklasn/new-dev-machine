@@ -40,6 +40,7 @@ The script installs essential development tools and applications, ensuring you h
 - **dbeaver-community**: DB GUI
 - **1password**: Password manager
 - **rectangle**: Move and resize windows using keyboard shortcuts or snap areas
+- **notion**: App to write, plan, collaborate, and get organised
 
 
 ### Ubuntu (Linux)  
