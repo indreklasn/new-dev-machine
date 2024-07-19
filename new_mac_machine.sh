@@ -150,8 +150,8 @@ fi
 # 1password
 brew install --cask 1password
 
-# Rectangle
-brew install --cask rectangle
+# Postman
+brew install --cask postman
 
 # Notion
 brew install --cask notion
